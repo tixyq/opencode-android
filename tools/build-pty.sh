@@ -8,7 +8,7 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$REPO/build"
 mkdir -p "$OUT"
 
-if [ ! -d "$REPO/rust/bun-pty/.git" ]; then
+if [ ! -e "$REPO/rust/bun-pty/.git" ]; then
     echo "missing submodule rust/bun-pty; run: git submodule update --init" >&2
     exit 1
 fi

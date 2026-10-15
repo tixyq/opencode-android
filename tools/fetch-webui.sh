@@ -8,10 +8,12 @@ UA='Mozilla/5.0 (Linux; Android 16; CPH2727) AppleWebKit/537.36 (KHTML, like Gec
 rm -rf "$BASE"
 mkdir -p "$BASE"
 
-echo "== fetch upstream base =="
+echo "== fetch upstream base (3 crawl phases) =="
 curl -s -m 30 -A "$UA" -e 'https://beta.opencode.ai/' \
     'https://beta.opencode.ai/index.html' -o "$BASE/index.html"
 python3 "$REPO/webui/tools/mirror.py" "$BASE"
+python3 "$REPO/webui/tools/mirror2.py" "$BASE"
+python3 "$REPO/webui/tools/crawl3.py" "$BASE"
 
 echo "== verify snapshot hashes =="
 cd "$BASE"

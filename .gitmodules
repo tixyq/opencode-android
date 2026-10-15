@@ -1,0 +1,3 @@
+[submodule "rust/bun-pty"]
+	path = rust/bun-pty
+	url = https://github.com/sursaone/bun-pty.git

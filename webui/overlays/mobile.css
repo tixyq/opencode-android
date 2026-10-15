@@ -1,0 +1,111 @@
+/* oc-mobile: hide version labels + support entry points, fix composer on small screens */
+
+/* Settings > About: hide "Version x.y.z" line (first paragraph of intro) */
+.settings-about-intro > p:first-child {
+  display: none !important;
+}
+
+/* Settings > About: hide all external links (website, contributors, author profiles) */
+.settings-about-content a[href^="http"] {
+  display: none !important;
+}
+
+/* Settings > About: only the logo is ever visible (applies at render,
+   no flash of the full page while JS boots; no :has() dependency).
+   The injected "version n" line is exempted too. */
+.settings-about-content > .settings-about-intro,
+.settings-about-content > .settings-about-credits,
+.settings-about-content > .settings-about-publication,
+.settings-about-content > .settings-about-faint,
+.settings-about-content > .settings-about-details,
+.settings-about-content > .settings-about-legal,
+.settings-about-content > .settings-about-copyright,
+.settings-about-content > .settings-about-copyright img,
+.settings-about-content > img,
+.settings-about-content > p:not(.oc-about-version),
+.settings-about-content a[href^="http"] {
+  display: none !important;
+}
+
+/* Settings > About: only the logo stays visible (siblings hidden by
+   mobile.js), with the injected "version n" line under it */
+.oc-about-version {
+  margin: 12px 0 0 !important;
+  text-align: center !important;
+  font: 440 13px/20px system-ui, sans-serif;
+  color: var(--v2-text-text-muted, #808080);
+}
+
+/* Settings docs links (skills, themes) */
+a[href*="opencode.ai/docs"] {
+  display: none !important;
+}
+
+/* Error page: hide Discord report button */
+a[href*="discord"] {
+  display: none !important;
+}
+
+/* Help buttons: home projects nav + mobile tabs drawer */
+button:has(use[href="#opencode-v2-icon-help"]) {
+  display: none !important;
+}
+
+/* Connect screen: hide computer/pair hint footer and QR scan entry */
+[data-component="connect-server"] .server-connect-content > footer {
+  display: none !important;
+}
+[data-component="connect-server"] .server-connect-content > button {
+  display: none !important;
+}
+#server-connect-camera-unavailable {
+  display: none !important;
+}
+.server-connect-scanner {
+  display: none !important;
+}
+
+/* Mobile: no keyboard-shortcut hints (desktop feature) */
+[data-component="keybind-v2"] {
+  display: none !important;
+}
+[data-slot="menu-v2-item-shortcut"] {
+  display: none !important;
+}
+
+/* Mobile: effort selector always visible, like the model button
+   (stock hides it until hover, which touch screens never do) */
+[data-component="composer"] .composer-variant-default {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Mobile: dialogs must fit narrow screens (stock 480px overflows) */
+@media (max-width: 520px) {
+  /* Above menus (z-60): the confirm dialog must not open underneath them. */
+  [data-component="dialog-v2"] {
+    z-index: 70 !important;
+  }
+  /* Width only: heights stay fixed, the file tree needs them. */
+  [data-component="dialog-v2"] [data-slot="dialog-container"] {
+    width: calc(100vw - 32px) !important;
+    max-width: 480px;
+  }
+  [data-component="dialog-v2"][data-size="large"] [data-slot="dialog-container"] {
+    width: calc(100vw - 32px) !important;
+    max-width: 640px;
+    height: min(calc(100vh - 92px), 480px) !important;
+  }
+}
+
+/* Composer bottom bar: reclaim horizontal space so the effort (variant)
+   selector is not pushed under the send button */
+@media (max-width: 700px) {
+  [data-slot="composer-controls"] {
+    margin-inline-end: 4px !important;
+    margin-inline-start: 0 !important;
+  }
+  [data-action="composer-model"] {
+    max-width: 128px !important;
+  }
+}

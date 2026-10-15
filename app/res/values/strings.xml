@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenCode</string>
+    <string name="loading">Starting OpenCode…</string>
+    <string name="service_title">OpenCode server</string>
+    <string name="service_text">Running on this device</string>
+</resources>

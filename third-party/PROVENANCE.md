@@ -60,3 +60,26 @@
 - `rust/bun-pty.patch` — relativized `[patch.crates-io]` to the stub.
 - `tools/` — fetch + build pipeline.
 - Debug keystore is GENERATED at build time (tools/build.sh), never stored.
+
+## Component licenses (why your own license choice is constrained)
+
+Our code is under `LICENSE` (MIT by default, swappable). These apply to
+bundled third-party parts regardless of that choice:
+
+- MIT: opencode server + web UI + libopentui (anomalyco/opencode),
+  bun-pty (sursaone/bun-pty), portable-pty et al (Rust crates, MIT/Apache
+  dual), our stub-serial (MIT). MIT requires keeping copyright notices:
+  they live here and upstream; binary distributions should also carry
+  them (e.g. an in-app legal note — currently TODO, see README).
+- GPL (copyleft): the Termux userland + proot ship GPLv2/GPLv3 code
+  (bash, coreutils, readline, proot, dpkg, ...). They run as separate
+  processes (mere aggregation, so our code stays under its own license),
+  but distributing their binaries obliges a source offer: use the exact
+  package versions below to find the corresponding sources in
+  https://github.com/termux/termux-packages.
+- Pinned Termux package versions in this build: proot 5.1.107.96,
+  libtalloc 2.5.0, libandroid-shmem 0.7, bash 5.3.20, readline 8.3.6,
+  ncurses 6.6.x, coreutils 9.12, dash 0.5.13.5.
+
+Trademark note: "OpenCode" and the logo belong to the upstream project.
+This is an unofficial client; README states no affiliation.

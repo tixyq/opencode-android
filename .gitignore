@@ -63,3 +63,6 @@ target/
 *.swp
 .idea/
 .vscode/
+
+# Python bytecode
+__pycache__/

@@ -45,6 +45,7 @@ echo "== assets: bootstrap + www =="
 cp "$REPO/build/bootstrap-clean.zip" "$ASSETS/bootstrap.zip"
 cp "$REPO/build/www.zip" "$ASSETS/www.zip"
 cp "$REPO/build/loader.html" "$ASSETS/loader.html"
+cp "$REPO/app/legal/NOTICES" "$ASSETS/NOTICES"
 
 echo "== aapt2 compile =="
 aapt2 compile --dir "$APP/res" -o "$OUT/res.zip"

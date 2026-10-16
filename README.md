@@ -66,3 +66,9 @@ comes from and why it is referenced the way it is.
 MIT (see LICENSE) for our code. Third-party components keep their own
 licenses — see THIRD_PARTY.md / PROVENANCE.md. If the MIT default does
 not fit, replace LICENSE before publishing.
+
+## Status
+
+Unofficial community client, not affiliated with or endorsed by the
+upstream OpenCode project. "OpenCode" and the logo are trademarks of
+their respective owners and are used here only to identify compatibility.

@@ -10,7 +10,7 @@ ANDROID_JAR="${ANDROID_JAR:-$REPO/build/android.jar}"
 KEYSTORE="$REPO/build/keys/opencode-debug.jks"
 PASSFILE="$REPO/build/keys/storepass.txt"
 
-# Toolchain: plain PATH first (Termux packages, distro packages),
+# Toolchain: plain PATH first (distro packages),
 # then ANDROID_HOME/build-tools (standard SDK layout, any Linux).
 find_sdk_tool() {
     if command -v "$1" >/dev/null 2>&1; then

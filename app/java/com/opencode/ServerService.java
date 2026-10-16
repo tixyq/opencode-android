@@ -587,7 +587,7 @@ public class ServerService extends Service {
         healUsrBinBash();
         applySymlinksTxt(usr);
         healSonameLinks(new File(usr, "lib"));
-        // No Termux greeting in the interactive terminal: hushlogin file
+        // No login greeting in the interactive terminal: hushlogin file
         // (standard mechanism honored by the guest login script) plus
         // TERMUX_HUSHLOGIN exported by oc-shell.
         writeSmallFile(new File(homeDir(), ".hushlogin"), "");

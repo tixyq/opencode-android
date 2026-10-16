@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Verify the build host has everything needed. Works on any modern Linux
-# (x86_64/aarch64, glibc), Termux included. Fails loudly with hints.
+# (x86_64/aarch64, glibc) — including on-device Linux environments such
+# as Termux. Fails loudly with hints.
 set -uo pipefail
 MISS=0
 need() { # command, install hint
@@ -19,10 +20,10 @@ need python3 "python3 package"
 need zip "zip package"
 need unzip "unzip package"
 need sha256sum "coreutils package"
-need dpkg-deb "Debian/Ubuntu: apt install dpkg | Fedora: dnf install dpkg | Termux: preinstalled"
-need javac "JDK 17+ (Temurin/OpenJDK) or Termux: pkg install openjdk-17"
+need dpkg-deb "Debian/Ubuntu: apt install dpkg | Fedora: dnf install dpkg"
+need javac "JDK 17+ (Temurin/OpenJDK packages, or distro package)"
 need keytool "comes with the JDK"
-need cargo "rustup (rustup.rs) or Termux: pkg install rust"
+need cargo "rustup (rustup.rs) or distro package"
 need rustc "same as cargo"
 echo "== Android tools: PATH or ANDROID_HOME =="
 if command -v aapt2 >/dev/null 2>&1; then

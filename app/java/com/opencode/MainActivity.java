@@ -12,7 +12,8 @@ import android.widget.FrameLayout;
 public class MainActivity extends Activity {
     private static final String TAG = "OpenCode";
 
-    // Test ports: APK runs its own server pair so the Termux stand is untouched.
+    // Test ports: APK runs its own server pair so it never collides with
+    // anything else on the device.
     // Release: 8080 / 49374.
     private static final String UI_ORIGIN = "http://127.0.0.1:18080";
     private static final String HOME_URL = UI_ORIGIN + "/";

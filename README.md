@@ -1,8 +1,8 @@
 # OpenCode for Android
 
 Self-contained Android APK (`com.opencode`, targetSdk 28) that runs an
-OpenCode server, a bundled PWA web UI and a Termux-compatible shell
-entirely on the phone — no Termux app required, no root.
+OpenCode server, a bundled PWA web UI and a Linux shell
+entirely on the phone — nothing else needs to be installed, no root.
 
 App identity: name `OpenCode`, package `com.opencode`. Version comes from
 `app/AndroidManifest.xml` (`versionCode`/`versionName` travel together).
@@ -28,13 +28,14 @@ App identity: name `OpenCode`, package `com.opencode`. Version comes from
 
 ## Build host
 
-Any modern Linux, x86_64 or aarch64 (Termux on Android included):
+Any modern Linux, x86_64 or aarch64 — including on-device Linux
+environments such as Termux on Android:
 
 - `bash curl git python3 zip unzip sha256sum dpkg-deb`
 - JDK 17+ (`javac`, `keytool`)
-- `cargo` + `rustc` (rustup recommended off-Termux)
+- `cargo` + `rustc` (rustup recommended; distro packages work too)
 - Android tools: `aapt2`, `apksigner`, and `dx` or `d8` — from `PATH`
-  (Termux packages, distro packages) or from an SDK
+  (distro packages) or from an SDK
   (`ANDROID_HOME`/`ANDROID_SDK_ROOT`, highest `build-tools/*` wins)
 - Android SDK platform android-28 (`tools/fetch-sdk.sh` fetches it via
   `sdkmanager` or dl.google.com; `ANDROID_JAR` env overrides the path)
@@ -75,7 +76,7 @@ comes from and why it is referenced the way it is.
 ## License
 
 MIT (see LICENSE) for our code. Third-party components keep their own
-licenses — see THIRD_PARTY.md / PROVENANCE.md. If the MIT default does
+licenses — see third-party/PROVENANCE.md. If the MIT default does
 not fit, replace LICENSE before publishing.
 
 ## Status

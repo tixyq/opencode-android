@@ -35,19 +35,19 @@
   the exact snapshot; fetch fails loudly on drift.
 - Android SDK platform android-28 (`platforms;android-28` via sdkmanager)
   for android.jar. Toolchain (aapt2, apksigner, dx/d8, javac, cargo) comes
-  from PATH or ANDROID_HOME on any Linux; on a Termux build host the same
-  tools come from Termux packages (`pkg install aapt2 dx apksigner
-  openjdk-17 python git zip unzip curl rust`). Only the PTY bridge needs
-  an NDK when the host is not aarch64-Android (auto-detected).
+  from PATH or ANDROID_HOME on any Linux; where these ship as system
+  packages, install them that way (`pkg install aapt2 dx apksigner
+  openjdk-17 python git zip unzip curl rust` covers it). Only the PTY
+  bridge needs an NDK when the host is not aarch64-Android (auto-detected).
 
 ## Vendored snapshot (no stable download URL found)
 
 - `third-party/libopentui.so` (+ .sha256): OpenTUI native renderer,
-  dlopen'd lazily by the server for TUI. No package owns it on Termux and
-  no standalone upstream asset exists; snapshot taken from a working
-  install (identical to the copy shipped with the upstream opencode
-  Android bundle in ~/opencode-install). If upstream ever publishes it
-  separately, replace this blob with a pinned download.
+  dlopen'd lazily by the server for TUI. It ships in no package and has
+  no standalone upstream asset; this is a hash-pinned snapshot taken from
+  a working install (byte-identical across the installs it was compared
+  against). If upstream ever publishes it separately, replace this blob
+  with a pinned download.
 
 ## Our code (this repo, see LICENSE)
 

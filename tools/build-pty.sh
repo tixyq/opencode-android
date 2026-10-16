@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the PTY bridge cdylib from pinned sources.
-# Native aarch64-Android hosts (incl. Termux) build directly.
+# On aarch64-Android hosts it builds directly.
 # Any other Linux cross-compiles via the NDK (ANDROID_NDK_HOME).
 # Output: $REPO/build/librust_pty_arm64.so
 set -euo pipefail

@@ -9,8 +9,9 @@ rm -rf "$BASE"
 mkdir -p "$BASE"
 
 echo "== fetch upstream base (3 crawl phases) =="
-curl -s -m 30 -A "$UA" -e 'https://beta.opencode.ai/' \
-    'https://beta.opencode.ai/index.html' -o "$BASE/index.html"
+curl -sL -m 60 -A "$UA" -e 'https://beta.opencode.ai/' \
+    'https://beta.opencode.ai/' -o "$BASE/index.html"
+[ -s "$BASE/index.html" ] || { echo "index.html empty, aborting" >&2; exit 1; }
 python3 "$REPO/webui/tools/mirror.py" "$BASE"
 python3 "$REPO/webui/tools/mirror2.py" "$BASE"
 python3 "$REPO/webui/tools/crawl3.py" "$BASE"

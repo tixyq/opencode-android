@@ -32,7 +32,7 @@ while queue:
     seen.add(path)
     local = ROOT + path
     os.makedirs(os.path.dirname(local), exist_ok=True)
-    r = subprocess.run(['curl', '-s', '-m', '30', '-A', UA, '-e', BASE + '/',
+    r = subprocess.run(['curl', '-sL', '-m', '30', '-A', UA, '-e', BASE + '/',
                         BASE + path, '-o', local, '-w', '%{http_code} %{size_download}'],
                        capture_output=True, text=True)
     code, _, size = r.stdout.partition(' ')

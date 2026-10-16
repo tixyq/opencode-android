@@ -17,7 +17,7 @@ for dirpath, _, files in os.walk(ROOT):
 
 def fetch(url, local):
     os.makedirs(os.path.dirname(local), exist_ok=True)
-    r = subprocess.run(['curl', '-s', '-m', '30', '-A', UA, '-e', BASE + '/',
+    r = subprocess.run(['curl', '-sL', '-m', '30', '-A', UA, '-e', BASE + '/',
                         url, '-o', local, '-w', '%{http_code}'],
                        capture_output=True, text=True)
     return r.stdout.strip() == '200'

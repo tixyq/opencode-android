@@ -21,7 +21,7 @@ while queue:
     if fn in seen:
         continue
     seen.add(fn)
-    r = subprocess.run(['curl', '-s', '-m', '30', '-A', UA, '-e', BASE + '/',
+    r = subprocess.run(['curl', '-sL', '-m', '30', '-A', UA, '-e', BASE + '/',
                         BASE + p, '-o', ROOT + '/_assets/' + fn,
                         '-w', '%{http_code} %{size_download}'],
                        capture_output=True, text=True)

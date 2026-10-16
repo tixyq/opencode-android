@@ -14,7 +14,7 @@ App identity: name `OpenCode`, package `com.opencode`. Version comes from
 - `webui/overlays/` — our web additions: `mobile.css`, `mobile.js`,
   `enter-newline.js`, `loader.html`, `oc-mobile/changelog-empty-01.json`.
 - `webui/tools/` — mirror crawler + deterministic patch script.
-- `webui/MANIFEST.sha256` — pinned upstream snapshot (457 files).
+- `webui/MANIFEST.sha256` — pinned upstream snapshot (1895 files).
 - `rust/bun-pty` — submodule (sursaone/bun-pty, pinned commit in
   `.gitmodules`); `rust/bun-pty.patch` + `rust/stub-serial/` + `rust/Cargo.lock`
   are ours and make it build for bionic/Android.

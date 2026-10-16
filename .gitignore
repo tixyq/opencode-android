@@ -37,6 +37,26 @@ target/
 # Web UI mirror (fetched + hash-verified, then overlaid)
 /webui/base/
 
+# Generated locale pages (site/build.py regenerates them at Pages deploy time)
+/ar/
+/br/
+/bs/
+/da/
+/de/
+/es/
+/fr/
+/it/
+/ja/
+/ko/
+/no/
+/pl/
+/ru/
+/th/
+/tr/
+/uk/
+/zh/
+/zht/
+
 # OS / editor noise
 .DS_Store
 *~

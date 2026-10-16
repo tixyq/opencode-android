@@ -10,6 +10,40 @@ ANDROID_JAR="${ANDROID_JAR:-$REPO/build/android.jar}"
 KEYSTORE="$REPO/build/keys/opencode-debug.jks"
 PASSFILE="$REPO/build/keys/storepass.txt"
 
+# Toolchain: plain PATH first (Termux packages, distro packages),
+# then ANDROID_HOME/build-tools (standard SDK layout, any Linux).
+find_sdk_tool() {
+    if command -v "$1" >/dev/null 2>&1; then
+        command -v "$1"
+        return 0
+    fi
+    for home in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" "$HOME/Android/Sdk" /opt/android-sdk /usr/lib/android-sdk; do
+        [ -n "$home" ] || continue
+        best="$(ls -d "$home"/build-tools/*/ 2>/dev/null | sort -V | tail -n 1)"
+        if [ -n "$best" ] && [ -x "$best$1" ]; then
+            echo "$best$1"
+            return 0
+        fi
+    done
+    return 1
+}
+AAPT2="$(find_sdk_tool aapt2)" || { echo "missing tool: aapt2 (PATH or ANDROID_HOME/build-tools)" >&2; exit 1; }
+APKSIGNER="$(find_sdk_tool apksigner)" || { echo "missing tool: apksigner (PATH or ANDROID_HOME/build-tools)" >&2; exit 1; }
+if command -v dx >/dev/null 2>&1; then
+    DEXER="dx"
+    DEX_OUT_FLAG="--output"
+elif D8BIN="$(find_sdk_tool d8)"; then
+    DEXER="$D8BIN"
+    DEX_OUT_FLAG="--output-dir"
+else
+    echo "missing tool: dx or d8 (PATH or ANDROID_HOME/build-tools)" >&2
+    exit 1
+fi
+for t in javac keytool zip unzip python3; do
+    command -v "$t" >/dev/null 2>&1 || { echo "missing tool: $t" >&2; exit 1; }
+done
+echo "toolchain: aapt2=$AAPT2 dexer=$DEXER apksigner=$APKSIGNER javac=$(command -v javac)"
+
 for f in "$REPO/build/bootstrap-clean.zip" "$REPO/build/www.zip" \
          "$REPO/build/opencode-2.0.27" "$REPO/build/librust_pty_arm64.so" \
          "$REPO/build/android.jar" "$ANDROID_JAR"; do
@@ -19,8 +53,15 @@ done
 # shellcheck disable=SC1091
 . "$REPO/third-party/pins.env"
 WANT="$(basename "$OPENCODE_ASSET" .deb)"; WANT="${WANT#opencode_}"; WANT="${WANT%_aarch64}"
-V=$("$REPO/build/opencode-2.0.27" --version 2>/dev/null | head -n 1)
-case "$V" in *"$WANT"*) echo "server binary: $V";; *) echo "bad server binary ($V, want $WANT)" >&2; exit 1;; esac
+BINCHECK="$REPO/build/opencode-2.0.27"
+echo "$OPENCODE_BIN_SHA256  $BINCHECK" | sha256sum -c -
+if "$BINCHECK" --version >/dev/null 2>&1; then
+    V=$("$BINCHECK" --version 2>/dev/null | head -n 1)
+    echo "server binary: $V"
+    case "$V" in *"$WANT"*) ;; *) echo "bad server version ($V, want $WANT)" >&2; exit 1;; esac
+else
+    echo "note: cannot execute aarch64 binary on this host; SHA256 pin stands as the guarantee"
+fi
 
 VER=$(grep -o 'android:versionCode="[0-9]*"' "$APP/AndroidManifest.xml" | grep -o '[0-9]*')
 APK="$REPO/build/OpenCode-$VER.apk"
@@ -48,10 +89,10 @@ cp "$REPO/build/loader.html" "$ASSETS/loader.html"
 cp "$REPO/app/legal/NOTICES" "$ASSETS/NOTICES"
 
 echo "== aapt2 compile =="
-aapt2 compile --dir "$APP/res" -o "$OUT/res.zip"
+"$AAPT2" compile --dir "$APP/res" -o "$OUT/res.zip"
 
 echo "== aapt2 link =="
-aapt2 link -o "$OUT/base.apk" \
+"$AAPT2" link -o "$OUT/base.apk" \
   -I "$ANDROID_JAR" \
   --manifest "$APP/AndroidManifest.xml" \
   --min-sdk-version 28 --target-sdk-version 28 \
@@ -70,8 +111,16 @@ grep -v "bootstrap\|deprecat\|obsolete\|Xlint\|warnings\|Note:" "$OUT/javac.log"
 if [ "$JAVAC_CODE" -ne 0 ]; then echo "javac FAILED, aborting"; exit 1; fi
 if [ -z "$(ls -A "$OUT/obj" 2>/dev/null)" ]; then echo "no classes, aborting"; exit 1; fi
 
-echo "== dx =="
-dx --dex --output="$OUT/dex/classes.dex" "$OUT/obj"
+echo "== dex =="
+if [ "$DEX_OUT_FLAG" = "--output" ]; then
+    # classic dx
+    $DEXER --dex --output="$OUT/dex/classes.dex" "$OUT/obj"
+else
+    # d8 (modern build-tools): directory output, needs the platform on --lib
+    FINDINGS=$(find "$OUT/obj" -name '*.class' | tr '\n' ' ')
+    # shellcheck disable=SC2086
+    $DEXER --output "$OUT/dex/" --lib "$ANDROID_JAR" --min-api 28 $FINDINGS
+fi
 if [ ! -s "$OUT/dex/classes.dex" ]; then echo "empty classes.dex, aborting"; exit 1; fi
 
 echo "== add classes.dex =="
@@ -115,8 +164,8 @@ fi
 
 echo "== sign =="
 P=$(cat "$PASSFILE")
-apksigner sign --ks "$KEYSTORE" --ks-pass "pass:$P" --key-pass "pass:$P" --out "$APK" "$OUT/base.apk"
+"$APKSIGNER" sign --ks "$KEYSTORE" --ks-pass "pass:$P" --key-pass "pass:$P" --out "$APK" "$OUT/base.apk"
 
 echo "== verify =="
-apksigner verify --print-certs "$APK" | head -n 8
+"$APKSIGNER" verify --print-certs "$APK" | head -n 8
 ls -la "$APK"

@@ -34,9 +34,11 @@
   webui/MANIFEST.sha256). Upstream is a moving target: the manifest pins
   the exact snapshot; fetch fails loudly on drift.
 - Android SDK platform android-28 (`platforms;android-28` via sdkmanager)
-  for android.jar. On a Termux build host, aapt2/dx/apksigner/javac/cargo
-  come from Termux packages instead (`pkg install aapt2 dx apksigner
-  openjdk-17 python git zip unzip curl rust`).
+  for android.jar. Toolchain (aapt2, apksigner, dx/d8, javac, cargo) comes
+  from PATH or ANDROID_HOME on any Linux; on a Termux build host the same
+  tools come from Termux packages (`pkg install aapt2 dx apksigner
+  openjdk-17 python git zip unzip curl rust`). Only the PTY bridge needs
+  an NDK when the host is not aarch64-Android (auto-detected).
 
 ## Vendored snapshot (no stable download URL found)
 

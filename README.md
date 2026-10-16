@@ -28,17 +28,28 @@ App identity: name `OpenCode`, package `com.opencode`. Version comes from
 
 ## Build host
 
-Termux on aarch64 Android with:
-`pkg install aapt2 dx apksigner openjdk-17 python git zip unzip curl rust`
-plus Android SDK platform android-28 (`tools/fetch-sdk.sh` handles it via
-`sdkmanager`, falling back to dl.google.com).
+Any modern Linux, x86_64 or aarch64 (Termux on Android included):
 
-Then:
+- `bash curl git python3 zip unzip sha256sum dpkg-deb`
+- JDK 17+ (`javac`, `keytool`)
+- `cargo` + `rustc` (rustup recommended off-Termux)
+- Android tools: `aapt2`, `apksigner`, and `dx` or `d8` — from `PATH`
+  (Termux packages, distro packages) or from an SDK
+  (`ANDROID_HOME`/`ANDROID_SDK_ROOT`, highest `build-tools/*` wins)
+- Android SDK platform android-28 (`tools/fetch-sdk.sh` fetches it via
+  `sdkmanager` or dl.google.com; `ANDROID_JAR` env overrides the path)
+- For non-ARM hosts only: `ANDROID_NDK_HOME` + `rustup target add
+  aarch64-linux-android` (the PTY bridge cross-compiles; everything else
+  is just downloaded and packed, arch-independent)
+
+`tools/check-host.sh` verifies all of this and tells you exactly what is
+missing. Then:
 
 ```sh
 git clone --recurse-submodules <this-repo>
 cd opencode-android
-./tools/all.sh        # fetch + verify + build, ~1 GB downloads, ~10 min
+./tools/check-host.sh
+./tools/all.sh        # fetch + verify + build, ~1 GB downloads
 ls build/OpenCode-*.apk
 ```
 

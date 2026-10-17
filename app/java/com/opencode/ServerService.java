@@ -299,6 +299,10 @@ public class ServerService extends Service {
                 "bin/proot",
                 "lib/libandroid-shmem.so",
                 "lib/libopentui.so", "lib/librust_pty_arm64.so",
+                // The close_range shim: without it the server dies with
+                // SIGSYS on devices whose seccomp policy traps that call,
+                // so a missing copy must force a re-extract like any other.
+                "lib/liboc_compat.so",
                 "libexec/proot/loader",
         };
         for (int i = 0; i < toolKeys.length; i++) {
@@ -443,13 +447,14 @@ public class ServerService extends Service {
         Log.i(TAG, "bootstrap extracted");
     }
 
-    private static final String TOOLS_BUILD = "6";
+    private static final String TOOLS_BUILD = "7";
 
     /**
      * Staged native files (mirror of assets/tools): proot to enter the
      * guest, its two loader deps, the unmanaged libopentui the guest
-     * opencode dlopens, and the pty helper. Everything else (shell, apt,
-     * libraries) belongs to the bootstrap and is never overwritten.
+     * opencode dlopens, the pty helper, and the close_range shim the
+     * server is preloaded with. Everything else (shell, apt, libraries)
+     * belongs to the bootstrap and is never overwritten.
      */
     private void extractToolsOnce() throws IOException {
         File usr = new File(files(), "usr");
@@ -587,7 +592,7 @@ public class ServerService extends Service {
         healUsrBinBash();
         applySymlinksTxt(usr);
         healSonameLinks(new File(usr, "lib"));
-        // No login greeting in the interactive terminal: hushlogin file
+        // No Termux greeting in the interactive terminal: hushlogin file
         // (standard mechanism honored by the guest login script) plus
         // TERMUX_HUSHLOGIN exported by oc-shell.
         writeSmallFile(new File(homeDir(), ".hushlogin"), "");
@@ -2352,6 +2357,26 @@ public class ServerService extends Service {
         return false;
     }
 
+    /**
+     * The server dies at startup with SIGSYS on devices whose seccomp
+     * policy traps close_range(2) — the call the runtime makes to drop
+     * inherited descriptors (see app/native/oc_compat.c). The trap is
+     * kernel policy and is inherited across execve, so the only place we
+     * can intervene is interposing the call in userspace.
+     *
+     * The shim is preloaded only when it actually shipped; a missing file
+     * must not stop the server, so this is best effort by design.
+     */
+    private void applyCompatShim(Map<String, String> env) {
+        File shim = new File(files(), "usr/lib/liboc_compat.so");
+        if (shim.isFile()) {
+            env.put("LD_PRELOAD", shim.getAbsolutePath());
+            Log.i(TAG, "compat shim: preloaded");
+        } else {
+            Log.w(TAG, "compat shim missing, server may hit SIGSYS");
+        }
+    }
+
     private void runServerDirectLive(String binary) throws IOException, InterruptedException {
         String libDir = getApplicationInfo().nativeLibraryDir;
         ProcessBuilder builder = new ProcessBuilder(
@@ -2367,6 +2392,7 @@ public class ServerService extends Service {
         env.put("HOME", homeDir().getAbsolutePath());
         env.put("TMPDIR", new File(files(), "tmp").getAbsolutePath());
         env.put("LD_LIBRARY_PATH", toolsLib + ":" + libDir);
+        applyCompatShim(env);
         env.put("PATH", new File(files(), "usr/bin").getAbsolutePath()
                 + ":/system/bin:/system/xbin");
         env.put("SHELL", ocShell);
@@ -2403,6 +2429,7 @@ public class ServerService extends Service {
         env.put("HOME", homeDir().getAbsolutePath());
         env.put("TMPDIR", new File(files(), "tmp").getAbsolutePath());
         env.put("LD_LIBRARY_PATH", toolsLib + ":" + libDir);
+        applyCompatShim(env);
         env.put("PATH", new File(files(), "usr/bin").getAbsolutePath()
                 + ":/system/bin:/system/xbin");
         env.put("SHELL", ocShell);

@@ -11,6 +11,8 @@ App identity: name `OpenCode`, package `com.opencode`. Version comes from
 
 - `app/` — our Android code (`MainActivity`, `ServerService`,
   `StaticServer`, `Notifier`), manifest, resources, launcher icon source.
+- `app/native/oc_compat.c` — `liboc_compat.so`, the `close_range(2)`
+  shim (see below), built from source by `tools/build-native.sh`.
 - `webui/overlays/` — our web additions: `mobile.css`, `mobile.js`,
   `enter-newline.js`, `loader.html`, `oc-mobile/changelog-empty-01.json`.
 - `webui/tools/` — mirror crawler + deterministic patch script.

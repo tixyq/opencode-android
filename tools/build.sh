@@ -46,6 +46,7 @@ echo "toolchain: aapt2=$AAPT2 dexer=$DEXER apksigner=$APKSIGNER javac=$(command 
 
 for f in "$REPO/build/bootstrap-clean.zip" "$REPO/build/www.zip" \
          "$REPO/build/opencode-2.0.27" "$REPO/build/librust_pty_arm64.so" \
+         "$REPO/build/liboc_compat.so" \
          "$REPO/build/android.jar" "$ANDROID_JAR"; do
     [ -f "$f" ] || { echo "missing input: $f (run tools/fetch-*.sh first)" >&2; exit 1; }
 done
@@ -80,6 +81,9 @@ cp "$REPO/build/stage-tools/lib/libtalloc.so.2.5.0" \
    "$ASSETS/tools/lib/"
 ln -sf libtalloc.so.2.5.0 "$ASSETS/tools/lib/libtalloc.so.2"
 cp "$REPO/build/librust_pty_arm64.so" "$ASSETS/tools/lib/"
+# Interposes close_range(2), which Android's seccomp policy traps for this
+# app and which otherwise kills the server with SIGSYS at startup.
+cp "$REPO/build/liboc_compat.so" "$ASSETS/tools/lib/"
 chmod 755 "$ASSETS/tools/bin/"* "$ASSETS/tools/lib/"* "$ASSETS/tools/libexec/proot/"*
 
 echo "== assets: bootstrap + www =="

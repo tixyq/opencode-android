@@ -54,6 +54,11 @@
 - `app/` — Android app: MainActivity, ServerService (env bootstrap,
   oc-shell/proot entry, updater, notifications), StaticServer, Notifier,
   manifest, resources, launcher icon source (`app/icon-src/`).
+- `app/native/oc_compat.c` — `close_range(2)` interposer. Android's
+  seccomp policy traps that syscall for this app and the trap kills the
+  server with SIGSYS at startup; the kernel policy is inherited across
+  execve, so the call is intercepted in userspace instead. All other
+  syscalls are forwarded untouched. Ours, MIT.
 - `webui/overlays/` — mobile.css, mobile.js, enter-newline.js, loader.html,
   oc-mobile/changelog-empty-01.json; index.html patch + changelog rewrite
   applied deterministically by webui/tools.

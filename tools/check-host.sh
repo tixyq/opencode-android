@@ -25,6 +25,7 @@ need javac "JDK 17+ (Temurin/OpenJDK packages, or distro package)"
 need keytool "comes with the JDK"
 need cargo "rustup (rustup.rs) or distro package"
 need rustc "same as cargo"
+need clang "needed for the compat shim (LLVM/clang package)"
 echo "== Android tools: PATH or ANDROID_HOME =="
 if command -v aapt2 >/dev/null 2>&1; then
     echo "ok: aapt2 (PATH)"
